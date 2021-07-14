@@ -6,12 +6,26 @@
     <schema_version>2.3</schema_version>
     <timestamp>2021-06-17T03:50:29.615Z</timestamp>
   </generator>
+  <cpe-item name="cpe:/a:repetier-server:repetier-server:0.51">
+  <title xml:lang="en-US">Repetier-Server 0.51</title>
+  <references>
+    <reference href="https://www.repetier-server.com/documentation/">Version</reference>
+  </references>
+  <cpe-23:cpe23-item name="cpe:2.3:a:repetier-server:repetier-server:0.51:*:*:*:*:*:*:*"/>
+</cpe-item>
  <cpe-item name="cpe:/a:apache:httpclient:4.0">
     <title xml:lang="en-US">Apache Software Foundation HttpClient 4.0</title>
     <references>
       <reference href="http://www.apache.org/dist/httpcomponents/httpclient/RELEASE_NOTES-4.3.x.txt">Change Log</reference>
     </references>
     <cpe-23:cpe23-item name="cpe:2.3:a:apache:httpclient:4.0:*:*:*:*:*:*:*"/>
+  </cpe-item>
+   <cpe-item name="cpe:/a:repetier-server:repetier-server:0.51">
+    <title xml:lang="en-US">Repetier-Server 0.51</title>
+    <references>
+      <reference href="https://www.repetier-server.com/documentation/">Version</reference>
+    </references>
+    <cpe-23:cpe23-item name="cpe:2.3:a:repetier-server:repetier-server:0.51:*:*:*:*:*:*:*"/>
   </cpe-item>
   <cpe-item name="cpe:/a:apache:httpclient:4.0:alpha1">
     <title xml:lang="en-US">Apache Software Foundation HttpClient 4.0 Alpha 1</title>

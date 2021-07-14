@@ -1,11 +1,7 @@
 import rapidxml
-import time
-
 from cpe import CPE
 from cpe.cpeset2_2 import CPESet2_2
 from cpe.cpelang2_2 import CPELanguage2_2
-import operator
-
 
 def get_methods(object, spacing=20):
   methodList = []
@@ -22,6 +18,7 @@ def get_methods(object, spacing=20):
               processFunc(str(getattr(object, method).__doc__)))
     except:
         print(method.ljust(spacing) + ' ' + ' getattr() failed')
+
 class CPEAnalyser:
     #Loads the database, CPE/XML Format
     def __init__(self,dbPath):
@@ -48,7 +45,6 @@ class CPEAnalyser:
                         cpe = a.value
                         CPEOBJ = CPE(cpe)
                         cpe_dict = list(CPEOBJ.values())[0][0]
-                        cpe_dict["value"] = a.value
                         self.cpeList.append(cpe_dict)
                         id = len(self.cpeList)-1
                         vendor = CPEOBJ.get_vendor()[0]
@@ -90,18 +86,29 @@ class CPEAnalyser:
                 copy = [ *copy , *n.split(s)]
             rv= copy
         return rv
+    """
+    Returns all CPE data relevant to word, in the format :
+    {
+        "type" : type_Value
+        [type_Value] : CPE_Value
+    }
+    
+    def collectWordData(self , w):
+        return [
+            *( { "ht" : i , "type" : "ht" } for i in  self.wordToHardwareTargetMap.get(w) or [] ) , 
+            *( { "product" : i , "type" : "product" } for i in  self.wordToProductMap.get(w) or [] ) , 
+            *( { "st" : i , "type" : "st" } for i in  self.wordToSoftwareTargetMap.get(w) or [] ) , 
+            *( { "vendor" : i , "type" : "vendor" } for i in  self.wordToVendorMap.get(w) or [] ) 
+        ]"""
     def collectWordData(self , w, t ):
-        #return [self.cpeList[i] for i in self.productMap[w] ]
         if (t == "ht"):
-            return self.hardwareTargetMap[w]
+            return [self.cpeList[i] for i in self.hardwareTargetMap[w]]
         if (t == "product"):
-            return self.productMap[w] 
+            return [self.cpeList[i] for i in self.productMap[w] ]
         if (t == "st"):
-            #return [self.cpeList[i] for i in self.softwareTargetMap[w]]
-            return self.softwareTargetMap[w]
+            return [self.cpeList[i] for i in self.softwareTargetMap[w]]
         if (t == "vendor"):
-            #return  [ self.cpeList[i] for i in self.vendorMap[w] ]
-            return  self.vendorMap[w] 
+            return  [ self.cpeList[i] for i in self.vendorMap[w] ]
         else:
             return []
     def getCPEsOfWord(self ,w,t):
@@ -114,47 +121,23 @@ class CPEAnalyser:
     def getCpeOfPckg(self,pckg):
         rv = []
         for w in pckg:
-            rv = [*rv, *self.collectWordData(pckg[w],w)]
-        freq = {}
-        for entry in rv:
-            if (freq.get(entry) == None):
-                freq[entry] = 0
-            freq[entry] = freq[entry] + 1
-        ordered = []
-        maxVal = 1000000
-        while (True and len(freq)):
-            m = max(freq.items(), key=operator.itemgetter(1))[0]
-            if( maxVal < m):
-                break
-            maxVal = freq[m]
-            ordered = [*ordered , {
-                "index": m,
-                "cpe" : self.cpeList[m]["value"] ,
-                "score" : freq[m] 
-            }]
-            del freq[m]
-        return ordered
-construction_time = time.time()
+            rv = [*rv, self.getCPEsOfWord(pckg[w],w)]
+        return rv
+cpeAnalyser = CPEAnalyser("./reduced/echantillion-cpe-names.xml")
 
-#cpeAnalyser = CPEAnalyser("./reduced/echantillion-cpe-names.xml")
-#cpeAnalyser = CPEAnalyser("./official-cpe-dictionary_v2.3/official-cpe-dictionary_v2.3.xml")
-cpeAnalyser= CPEAnalyser("./official-cpe-dictionary_v2.3/official-cpe-dictionary_v2.3_reduced.xml")
 """
 mavenName = input('Enter a mavens artifact name: ')
 #com.apache.httpclient
 with open('out.txt', 'w') as f:
     print(cpeAnalyser.getCpeOfPckg(mavenName), file=f)
 """
-print("--- %s seconds construction ---" % (time.time() - construction_time))
-start_time = time.time()
 
 print(cpeAnalyser.getCpeOfPckg(
     {
         "vendor" : "apache",
         "product" : "httpclient",
         "ht" : "",
-        "st" : "",
+        "tt" : "",
         "language" : "",
         "version" : "",
-}))
-print("--- %s seconds query---" % (time.time() - start_time))
+    }))
